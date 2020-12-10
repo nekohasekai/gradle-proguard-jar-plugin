@@ -15,16 +15,17 @@ open class ProguardJarExtension(project: Project) {
         "META-INF/NOTICE",
         "META-INF/LICENSE",
         "META-INF/INDEX.LIST",
-        "META-INF/com/android/tools",
-        "META-INF/maven"
+        "META-INF/com/android/tools/**",
+        "META-INF/maven/**",
+        "META-INF/proguard/**"
     )
 
     fun exclude(vararg path: String) {
-        excludes.addAll(excludes)
+        excludes.addAll(path)
     }
 
     var outputDirectory = File(project.buildDir, "proguardJar")
-    var outputFileName = "${project.name}-${project.version}.jar"
+    var outputFileName = ""
 
     var addLibraryDefinedConfigure = true
 
