@@ -15,7 +15,7 @@ open class ProguardJarExtension(project: Project) {
         "META-INF/NOTICE",
         "META-INF/LICENSE",
         "META-INF/INDEX.LIST",
-        "META-INF/com/android/tools/**",
+        "META-INF/com.android.tools/**",
         "META-INF/maven/**",
         "META-INF/proguard/**"
     )
@@ -24,9 +24,7 @@ open class ProguardJarExtension(project: Project) {
         excludes.addAll(path)
     }
 
-    var outputDirectory = File(project.buildDir, "proguardJar")
-    var outputFileName = ""
-
+    var outputFile = File(File(project.buildDir, "proguardJar"), "projectName-projectVersion.jar")
     var addLibraryDefinedConfigure = true
 
 }

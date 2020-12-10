@@ -13,6 +13,7 @@ open class ProguardJarTask : ProGuardTask() {
 
     init {
         dependsOn.add("jar")
+        outputs.upToDateWhen { false }
     }
 
     @TaskAction
@@ -23,7 +24,10 @@ open class ProguardJarTask : ProGuardTask() {
 
         val extension = project.extensions.getByType<ProguardJarExtension>()
 
-        if (extension.proguardFile.isFile) configuration(extension.proguardFile)
+        if (extension.proguardFile.isFile) {
+            println("load proguard configure file ${extension.proguardFile}")
+            configuration(extension.proguardFile)
+        }
 
         val libraries = mainSourceSet.runtimeClasspath.files.filter { it.isFile }
         if (libraries.isNotEmpty()) {
@@ -37,10 +41,19 @@ open class ProguardJarTask : ProGuardTask() {
             }
             if (extension.addLibraryDefinedConfigure) {
                 for (library in libraries) {
-                    project.zipTree(library).visit {
-                        if (it.isDirectory || !it.relativePath.startsWith("META-INF/proguard/") || !it.name.endsWith(".pro")) return@visit
-                        println("load proguard configure file ${it.name} from ${library.name}")
-                        configuration(it.file)
+                    project.zipTree(library).visit { node ->
+                        if (node.isDirectory) return@visit
+
+                        if (node.relativePath.startsWith("META-INF/proguard/") && node.name.endsWith(".pro")) {
+                            println("load proguard configure file ${node.name} from ${library.name}")
+                            configuration(node.file)
+                        } else if (node.relativePath.startsWith("META-INF/services/")) {
+                            println("process service ${node.name} from ${library.name}")
+                            node.open().bufferedReader().forEachLine {
+                                keep("class $it { *; }")
+                            }
+                        }
+
                     }
                 }
             }
@@ -52,13 +65,13 @@ open class ProguardJarTask : ProGuardTask() {
             libraryjars(Jvm.current().javaHome.path + "/lib/rt.jar")
         }
 
-        var outFileName = extension.outputFileName
+        var outputFile = extension.outputFile
 
-        if (outFileName.isBlank()) {
-            outFileName = project.name + "-" + project.version + ".jar"
+        if (outputFile.name == "projectName-projectVersion.jar") {
+            outputFile = File(outputFile.parentFile, "${project.name}-${project.version}.jar")
         }
 
-        outjars(File(extension.outputDirectory, outFileName))
+        outjars(outputFile)
 
         super.proguard()
     }
