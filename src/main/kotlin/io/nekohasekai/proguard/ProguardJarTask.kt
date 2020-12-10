@@ -49,6 +49,7 @@ open class ProguardJarTask : ProGuardTask() {
                             configuration(node.file)
                         } else if (node.relativePath.startsWith("META-INF/services/")) {
                             println("process service ${node.name} from ${library.name}")
+                            keep("class ${node.name} { *; }")
                             node.open().bufferedReader().forEachLine {
                                 keep("class $it { *; }")
                             }
@@ -59,10 +60,11 @@ open class ProguardJarTask : ProGuardTask() {
             }
         }
 
-        if (JavaVersion.current().isJava11Compatible) {
+        if (JavaVersion.current().isJava9Compatible) {
             libraryjars(Jvm.current().javaHome.path + "/jmods")
         } else {
             libraryjars(Jvm.current().javaHome.path + "/lib/rt.jar")
+            libraryjars(Jvm.current().javaHome.path + "/lib/jce.jar")
         }
 
         var outputFile = extension.outputFile
