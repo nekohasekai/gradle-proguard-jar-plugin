@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     compileOnly(gradleApi())
     compileOnly(gradleKotlinDsl())
     implementation("com.guardsquare:proguard-gradle:7.0.1") {
