@@ -1,30 +1,42 @@
-@file:Suppress("MemberVisibilityCanBePrivate")
+@file:Suppress("MemberVisibilityCanBePrivate", "HasPlatformType", "UnstableApiUsage")
 
 package io.nekohasekai.proguard
 
-import org.gradle.api.Project
-import java.io.File
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.SetProperty
+import org.gradle.api.tasks.*
 
-open class ProguardJarExtension(project: Project) {
+abstract class ProguardJarExtension {
 
-    var proguardFile = File(project.projectDir, "proguard.pro")
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:Optional
+    @get:InputFile
+    abstract val proguardFile: RegularFileProperty
 
-    var excludes = hashSetOf(
-        "META-INF/MANIFEST.MF",
-        "META-INF/*.txt",
-        "META-INF/NOTICE",
-        "META-INF/LICENSE",
-        "META-INF/INDEX.LIST",
-        "META-INF/com.android.tools/**",
-        "META-INF/maven/**",
-        "META-INF/proguard/**"
-    )
+    @get:Optional
+    @get:Input
+    abstract val jarTaskName: Property<String>
+
+    @get:Optional
+    @get:Input
+    abstract val excludes: SetProperty<String>
 
     fun exclude(vararg path: String) {
-        excludes.addAll(path)
+        excludes.get().addAll(path)
     }
 
-    var outputFile = File(File(project.buildDir, "proguardJar"), "projectName-projectVersion.jar")
-    var addLibraryDefinedConfigure = true
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:Optional
+    @get:OutputFile
+    abstract val outputFile: RegularFileProperty
+
+    @get:Optional
+    @get:Input
+    abstract val processConfigures: Property<Boolean>
+
+    @get:Optional
+    @get:Input
+    abstract val keepServices: Property<Boolean>
 
 }

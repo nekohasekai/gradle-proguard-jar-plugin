@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    kotlin("jvm") version "1.3.72"
     `java-gradle-plugin`
-    kotlin("jvm") version "1.4.21"
 }
 
 group = "io.nekohasekai"
@@ -14,13 +14,10 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
     compileOnly(gradleApi())
     compileOnly(gradleKotlinDsl())
     implementation("com.guardsquare:proguard-gradle:7.0.1") {
         exclude("com.android.tools.build")
-        exclude("org.jetbrains.kotlin")
     }
 }
 
@@ -34,6 +31,7 @@ gradlePlugin {
     plugins {
         create("proguard-jar-plugin") {
             id = "io.nekohasekai.proguard-jar"
+            displayName = "Proguard Jar Plugin"
             implementationClass = "io.nekohasekai.proguard.ProguardJarPlugin"
         }
     }

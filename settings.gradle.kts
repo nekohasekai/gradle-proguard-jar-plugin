@@ -1,2 +1,2 @@
-rootProject.name = "gradle-proguard-jvm-plugin"
+rootProject.name = "gradle-proguard-jar-plugin"
 
